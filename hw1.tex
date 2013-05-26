@@ -1,0 +1,138 @@
+\documentclass[a4paper]{article}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage{color}
+\usepackage[usenames,dvipsnames]{xcolor}
+\definecolor{light-gray}{gray}{0.75}
+\usepackage{CJK}
+\usepackage{graphicx}
+\usepackage{amssymb}
+
+\begin{CJK}{UTF8}{gbsn}
+	\author{杨梓鑫 学号：2010301020023}
+	\title{第一次计算物理作业}
+	\begin{document}
+	\maketitle
+	\noindent $*\mathbf{1.5.}$	
+	Consider again a decay problem with two types of nuclei \emph{A} and \emph{B}, but now suppose that nuclei of type \emph{A} decay into ones of type \emph{B}, while nuclei of type \emph{B} decay into ones of type \emph{A}. Strictly speaking, this is not a ``decay'' process, since it is possible for the type \emph{B} nuclei to turn back into type \emph{A} nuclei. A better analogy would be a resonance in which a system can tunnel or move back and forth between two states \emph{A} and \emph{B} which have equal energies. The corresponding rate equations are
+	\begin{equation}
+		\frac{dN_A}{dt}=\frac{N_B}{\tau}-\frac{N_A}{\tau}
+	\end{equation}
+	\begin{equation}
+		\frac{dN_B}{dt}=\frac{N_A}{\tau}-\frac{N_B}{\tau}
+	\end{equation}
+where for simplicity we have assumed that the two types of decay are characterized by the same time constant, $\tau$. Solve this system of equations for the numbers of nuclei, $N_A$ and $N_B$, as functions of time. Consider different initial conditions, such as $N_A=100$, $N_B=0$, etc., and take $\tau=1$s. Show that your numerical results are consistent with the idea that the system reaches a steady state in which $N_A$ and $N_B$ are constant. In such a steady state, the time derivative $dN_A/dt$ and $dN_B/dt$ should vanish.\\\\
+\emph{Solution:}\\\\
+The analytical solution goes like:\\
+Since the total nuclei number $N=N_A+N_B$ is a constant,
+$$\frac{\textrm{d}N_A}{\textrm{d}t}=\frac{N-N_A}{\tau}-\frac{N_A}{\tau}$$
+$$\Rightarrow\frac{\textrm{d}N_A}{\textrm{d}t}=\frac{N}{\tau}-2\frac{N_A}{\tau}$$
+$$\Rightarrow N_A\left(t\right)=\frac{N}{2}+\frac{N}{2}e^{-\frac{2}{\tau}t}$$
+And$$N_B\left(t\right)=\frac{N}{2}-\frac{N}{2}e^{-\frac{2}{\tau}t}$$
+with the initial value $N_A(0)=N,N_B(0)=0$\\\\
+To run the resonance reaction numerically, the code of C++ programming will be written as:
+\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+    breaklines=true,
+      frame=L,
+        xleftmargin=\parindent,
+	  language=C++,
+	    showstringspaces=false,
+	      basicstyle=\footnotesize\ttfamily,
+	        keywordstyle=\bfseries\color{green!40!black},
+		  commentstyle=\itshape\color{purple!40!black},
+		    identifierstyle=\color{blue},
+		      stringstyle=\color{orange},
+			backgroundcolor=\color{light-gray},
+			  numbers=left,
+			    numbersep=5pt
+		      }
+
+		      \lstdefinestyle{customasm}{
+		        belowcaptionskip=1\baselineskip,
+			  frame=L,
+			    xleftmargin=\parindent,
+			      language=[x86masm]Assembler,
+			        basicstyle=\footnotesize\ttfamily,
+				  commentstyle=\itshape\color{purple!40!black},
+				  }
+
+				  \lstset{escapechar=@,style=customc}
+
+
+\lstinputlisting[language=C++]{1-5.cpp}
+
+\begin{figure}[htbp]
+When running in \emph{ROOT}, the above program allows us to input the initial values of $N_A,N_B,\tau$, and the times to resonant. By adjusting those values, we can  observe the behavior of the system and check if it fits the analytical solution.\\
+
+A rough glimpse of the figures tells us the symmetry along the $Num=\frac{N}{2}$ line of $N_A(t)$ and $N_B(t)$, and the resemblance to the exponential function.
+
+First, let's explore how the initial value of $N_A$ will affect the system.\\\\
+From Figure 1 to Figure 4, we set the initial $N_A$ from 10000 to 50. As the figures shown, the larger of $N_A$, the better the numerical simulation fits the analytical result. If we want to enchance the fitness of smaller $N_A$, the infinitesimal time interval d$t$ should be narrower than the present setting, too. In the figures, black curve with {\color{blue}blue *} represents the value of $N_B(t)$, and the other one, {\color{red}red curve} with black square $\blacksquare$ represents the value of $N_A(t)$. The different paramenter \emph{Step} is approximately about the final steady time.\\\\ To explain the discrepancy of the final steady values of $N_A(t)$ and $N_B(t)$, we have to notice that in Code line 19 - 31, we always run equation (1) first, and equation (2) next, which makes the value of $N_B(t)$ always smaller than $N_A(t)$ because d$t$ is not infinitesimal and the equations happen at the same time in the reality. And this also shows why the smaller the initial $N_A(t)$ i.e., the total number $N$ is, the larger the difference between the $N_A(t)$ and $N_B(t)$ is. To fix it, we still have to decrease the value of d$t$.
+
+\centering
+\includegraphics[scale=0.5]{10000bug0nioh1iuh40.pdf}
+\caption{$N_A=10000,N_B=0,\tau=1,Step=40$}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.36]{1000u0y1u25.pdf}
+\caption{$N_A=1000,N_B=0,\tau=1,Step=25$}
+
+\centering
+\includegraphics[scale=0.36]{100u0u1h30.pdf}
+\caption{$N_A=100,N_B=0,\tau=1,Step=30$}
+\centering
+\includegraphics[scale=0.36]{50vgc0jbk1vhj10.pdf}
+\caption{$N_A=50,N_B=0,\tau=1,Step=10$}
+
+\end{figure}
+
+
+
+
+\begin{figure}[p]
+From Figure 5 to Figure 10, we explored the effect of the value of $\tau$ on the system, by setting $\tau$ from $0.2$ to $10$, and the total number $N$ is fixed at $1000$.\\
+As we can see from the equations, the time constant $\tau$ mainly decide the time needed to be steady, which is represented by \emph{Step} here, and the behavior of the exponential function, which is represented by the curvature of the curve here.\\
+And the features of the following figures are consistent with the above discussion about $\tau$. With the increase of $\tau$, the \emph{Step} is increasing and the curve is less and less curly. Also, the difference between the final steady values of $N_A(t)$ and $N_B(t)$ is increasing, which can still blame on the largeness of d$t$ compare to $\frac{1}{\tau}$ in the equations.\\
+\centering
+\includegraphics[scale=0.5]{1000bk0vj_2giy8.pdf}
+\caption{$N_A=1000,N_B=0,\tau=0.2,Step=8$}
+\end{figure}
+
+
+\begin{figure}[p]
+\centering\includegraphics[scale=0.5]{1000ctttt0hi_5vyu15.pdf}
+\caption{$N_A=1000,N_B=0,\tau=0.5,Step=15$}
+\end{figure}
+
+
+\begin{figure}[p]
+\centering\includegraphics[scale=0.5]{1000u0y1u25.pdf}
+\caption{$N_A=1000,N_B=0,\tau=1,Step=25$}
+\end{figure}
+
+
+\begin{figure}[p]
+\centering\includegraphics[scale=0.5]{1000ij0fu3hi60.pdf}
+\caption{$N_A=1000,N_B=0,\tau=3,Step=60$}
+\end{figure}
+
+
+\begin{figure}[p]
+\centering\includegraphics[scale=0.5]{1000bku0vhj5vjhjv80.pdf}
+\caption{$N_A=1000,N_B=0,\tau=5,Step=80$}
+\end{figure}
+
+
+\begin{figure}[p]
+\centering\includegraphics[scale=0.5]{1000huhi0yuf10hiuhi110.pdf}
+\caption{$N_A=1000,N_B=0,\tau=10,Step=110$}
+
+
+\end{figure}
+
+\end{CJK}
+\end{document}
+
